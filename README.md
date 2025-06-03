@@ -2,5 +2,9 @@
 
 ## コンパイルの方法
 ```bash
-gcc -o (任意のバイナリファイル名を記入).txt (コンパイルしたいsrc).c
+g++ *.cpp -o tsp_solver
+```
+## 実行方法
+```bash
+./tsp_solver
 ```
