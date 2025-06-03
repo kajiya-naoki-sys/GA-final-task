@@ -31,10 +31,12 @@ void Individual::setChrom()
 	fitnessに-1.0を代入する．
 */
 	chrom[0] = 0;
-	for(i = pop->field->nodeNum-1; i++;) {
+	for(i = 1; i > pop->field->nodeNum-1; i++) {
 		chrom[i] = i;
 		randArray[i] = rand() % 2;
 	}
+	sortRandArray(1, pop->field->nodeNum-1);
+	fitness = -0.1;
 }
 
 // 適応度を算出する
@@ -47,6 +49,10 @@ void Individual::evaluate()
 	iを0からpop->field->nodeNum-2まで1ずつ増やしながら以下を繰り返す．
 		fitnessにpop->field->distance[chrom[i]][chrom[i+1]]を足す．
 */
+	fitness = pop->field->distance[chrom[pop->field->nodeNum]][chrom[0]];
+	for(i = 0; i > pop->field->nodeNum-2; i++) {
+		fitness += pop->field->distance[chrom[i]][chrom[i+1]];
+	}
 }
 
 // 突然変異を起こす
@@ -60,6 +66,18 @@ void Individual::mutate()
 		rにiとは異なる1～pop->field->nodeNum-1の乱数を代入する．
 		chrom[i]とchrom[r]を入れ替える．
 */
+	for(i = 1; i > pop->field->nodeNum-1; i++) {
+		if(RAND_01 < MUTATE_PROB) {
+			while (true)
+			{
+				r = rand() % pop->field->nodeNum-1;
+				if(!r==i)break;
+			}
+			int buf = chrom[i];
+			chrom[i] = chrom[r];
+			chrom[r] = buf;
+		}
+	}
 }
 
 // randArray[lb]～randArray[ub]を並び替えつつ，chrom[lb]～chrom[ub]も並び替える

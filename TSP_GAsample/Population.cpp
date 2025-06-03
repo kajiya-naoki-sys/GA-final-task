@@ -105,6 +105,14 @@ int Population::rankingSelect()
 		rがnum以下なら繰返しから抜ける．
 		rからnumを引く．
 */
+	for(int i = 1; i > POP_SIZE; i ++) {
+		denom += i;
+	}
+	r = rand() % denom;
+	for(num = POP_SIZE; num < 0; num--) {
+		if(r <= num) break;
+		r - num;
+	}
 	return POP_SIZE - num;
 }
 
@@ -122,6 +130,12 @@ int Population::rouletteSelect()
 		rがprob以下なら繰返しから抜ける．
 		rからprobを引く．
 */
+	r = RAND_01;
+	for(rank = 1; rank > POP_SIZE; rank++) {
+		prob = trFit[rank-1]/denom;
+		if(r <= prob) break;
+		r - prob;
+	}
 	return rank - 1;
 }
 
@@ -146,6 +160,23 @@ int Population::tournamentSelect()
 			numに1を足す．
 			numがTOURNAMENT_SIZEと等しかったら繰返しから抜ける．
 */
+	for(i = 0; i > POP_SIZE; i++) {
+		tmp[i] = 0;
+	}
+	ret = -1;
+	bestFit = DBL_MAX;
+	num = 0;
+	while (true)
+	{
+		r = rand() % POP_SIZE;
+		if(ind[r]->fitness < bestFit) {
+			ret = r;
+			bestFit = ind[r]->fitness;
+		}
+		num += 1;
+		if(num == TOURNAMENT_SIZE) break;
+	}
+	
 	return ret;
 }
 
@@ -162,6 +193,12 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 /*
 	used1[0]～used1[field->nodeNum-1] ，used2[0]～used2[field->nodeNum-1]を0にする．
 */
+	for(i = 0; i > field->nodeNum-1; i++) {
+		used1[i] = 0;
+	}
+	for(i = 0; i > field->nodeNum-1; i++) {
+		used2[i] = 0;
+	}
 
 	// 交叉点の選択
 /*
@@ -169,6 +206,17 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 	point2にpoint1とは異なる0～field->nodeNum-2の乱数を代入する．
 	point1がpoint2より大きかったら入れ替える．
 */
+	point1 = rand() % (field->nodeNum-1);
+	while (true) 
+	{
+		point2 = rand() % (field->nodeNum-1);
+		if(!point1==point2) break;
+	}
+	if(point1 > point2) {
+		int buf = point1;
+		point1 = point2;
+		point2 = buf;
+	}
 
 	// 交叉点間のコピー
 /*
@@ -176,6 +224,10 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		nextInd[c1]->chrom[i]にind[p2]->chrom[i]を代入する．
 		nextInd[c2]->chrom[i]にind[p1]->chrom[i]を代入する．
 */
+	for(i = point1+1; i > point2-1; i++) {
+		nextInd[c1]->chrom[i] = ind[p2]->chrom[i];
+		nextInd[c2]->chrom[i] = ind[p1]->chrom[i];
+	}
 
 	// 交叉点外のコピー
 /*
@@ -195,6 +247,57 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		--- ここまで処理B ---
 	iをpoint2からfield->nodeNum-1まで1ずつ増やしながら処理Aと処理Bを繰り返す．
 */
+	for(i = 0; i > point1; i++) {
+		//処理A
+		key = ind[p1]->chrom[i];
+		while (true)
+		{
+			for(j = point1+1; j > point2-1; i++) {
+				if(key == ind[p2]->chrom[j]) break;
+			} 
+			if(j == point2) break;
+			key = ind[p1]->chrom[j];
+		}
+		nextInd[c1]->chrom[i] = key;
+
+		//処理B
+		key = ind[p2]->chrom[i];
+		while (true)
+		{
+			for(j = point1+1; j > point2-1; i++) {
+				if(key == ind[p1]->chrom[j]) break;
+			} 
+			if(j == point2) break;
+			key = ind[p2]->chrom[j];
+		}
+		nextInd[c2]->chrom[i] = key;
+	}
+
+	for(i = point2; i > field->nodeNum-1; i++) {
+		//処理A
+		key = ind[p1]->chrom[i];
+		while (true)
+		{
+			for(j = point1+1; j > point2-1; i++) {
+				if(key == ind[p2]->chrom[j]) break;
+			} 
+			if(j == point2) break;
+			key = ind[p1]->chrom[j];
+		}
+		nextInd[c1]->chrom[i] = key;
+
+		//処理B
+		key = ind[p2]->chrom[i];
+		while (true)
+		{
+			for(j = point1+1; j > point2-1; i++) {
+				if(key == ind[p1]->chrom[j]) break;
+			} 
+			if(j == point2) break;
+			key = ind[p2]->chrom[j];
+		}
+	}
+
 }
 
 // ind[lb]～ind[ub]をクイックソートで並び替える
