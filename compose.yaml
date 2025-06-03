@@ -5,7 +5,5 @@ services:
     tty: true
     stdin_open: true
     volumes:
-      - ./TSP_GAsample:/program/src
-    volumes:
-      - ./TSPdata:/program/data
-    working_dir: /program
+      - .:.
+    working_dir: /working
