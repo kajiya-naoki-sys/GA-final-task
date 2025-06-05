@@ -83,9 +83,15 @@ void Population::alternate()
 	// printf("alternate:ここまでok\n");
 
 	// 次世代を現世代に変更する
-	tmp = ind;
-	ind = nextInd;
-	nextInd = tmp;
+	// tmp = ind;
+	// ind = nextInd;
+	// nextInd = tmp;
+	for (int i = 0; i < POP_SIZE; i++) {
+		for (int j = 0; j < field->nodeNum; j++) {
+			ind[i]->chrom[j] = nextInd[i]->chrom[j];
+		}
+		ind[i]->fitness = nextInd[i]->fitness;
+	}
 
 	// 評価する
 	evaluate();
@@ -205,25 +211,25 @@ int Population::tournamentSelect()
 void Population::crossover(int p1, int p2, int c1, int c2)
 {
 	int point1, point2, tmp, i, j, key;
-	FILE* fp = fopen("debugLog.txt", "a");  // "a" にすると追記
-	if (fp == NULL) {
-		perror("fopen");
-		exit(1);
-	}
+	// FILE* fp = fopen("debugLog.txt", "a");  // "a" にすると追記
+	// if (fp == NULL) {
+	// 	perror("fopen");
+	// 	exit(1);
+	// }
 
 
-	fprintf(fp, "----- DEBUG: ind[p1]->chrom -----\n");
-	for (int i = 0; i < field->nodeNum; i++) {
-		fprintf(fp, "%d ", ind[p1]->chrom[i]);
-	}
-	fprintf(fp, "\n");
+	// fprintf(fp, "----- DEBUG: ind[p1]->chrom -----\n");
+	// for (int i = 0; i < field->nodeNum; i++) {
+	// 	fprintf(fp, "%d ", ind[p1]->chrom[i]);
+	// }
+	// fprintf(fp, "\n");
 
-	fprintf(fp, "----- DEBUG: ind[p2]->chrom -----\n");
-	for (int i = 0; i < field->nodeNum; i++) {
-		fprintf(fp, "%d ", ind[p2]->chrom[i]);
-	}
-	fprintf(fp, "\n");
-	fclose(fp);
+	// fprintf(fp, "----- DEBUG: ind[p2]->chrom -----\n");
+	// for (int i = 0; i < field->nodeNum; i++) {
+	// 	fprintf(fp, "%d ", ind[p2]->chrom[i]);
+	// }
+	// fprintf(fp, "\n");
+	// fclose(fp);
 
 
 	// used1, used2の初期化
@@ -234,6 +240,12 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		used1[i] = 0;
 		used2[i] = 0;
 	}
+	printf("crossover result: ");
+	for (i = 0; i < field->nodeNum; i++) {
+		printf("%d ", nextInd[c1]->chrom[i]);
+	}
+	printf("\n");
+
 	// printf("crossover:ここまでok\n");
 	// 交叉点の選択
 /*
@@ -295,10 +307,13 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 			used1[key] = 1;
 
 			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p2]->chrom[j]) break;
+				if (key == ind[p2]->chrom[j]) {
+					key = ind[p1]->chrom[j];
+					break;
+				}
 			}
 			if (j == point2) break;
-			key = ind[p1]->chrom[j];
+			// key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
@@ -309,10 +324,13 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 			used2[key] = 1;
 
 			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p1]->chrom[j]) break;
+				if (key == ind[p1]->chrom[j]) {
+					key = ind[p2]->chrom[j];
+					break;
+				}
 			}
 			if (j == point2) break;
-			key = ind[p2]->chrom[j];
+			// key = ind[p2]->chrom[j];
 		}
 		nextInd[c2]->chrom[i] = key;
 	}
@@ -325,10 +343,13 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 			used1[key] = 1;
 
 			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p2]->chrom[j]) break;
+				if (key == ind[p2]->chrom[j]) {
+					key = ind[p1]->chrom[j];
+					break;
+				}
 			}
 			if (j == point2) break;
-			key = ind[p1]->chrom[j];
+			// key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
@@ -339,10 +360,13 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 			used2[key] = 1;
 
 			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p1]->chrom[j]) break;
+				if (key == ind[p1]->chrom[j]) {
+					key = ind[p2]->chrom[j];
+					break;
+				}
 			}
 			if (j == point2) break;
-			key = ind[p2]->chrom[j];
+			// key = ind[p2]->chrom[j];
 		}
 		nextInd[c2]->chrom[i] = key;
 	}

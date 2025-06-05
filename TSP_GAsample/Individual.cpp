@@ -38,6 +38,13 @@ void Individual::setChrom()
 		randArray[i] = rand();
 	}
 	sortRandArray(1, pop->field->nodeNum-1);
+
+	printf("setChrom()結果: ");
+	for (int i = 0; i < pop->field->nodeNum; i++) {
+		printf("%d ", chrom[i]);
+	}
+	printf("\n");
+
 	fitness = -0.1;
 }
 
@@ -52,9 +59,12 @@ void Individual::evaluate()
 		fitnessにpop->field->distance[chrom[i]][chrom[i+1]]を足す．
 */
 	fitness = pop->field->distance[chrom[pop->field->nodeNum-1]][chrom[0]];
+	// printf("distance[%d][%d] = %f\n", chrom[pop->field->nodeNum-1], chrom[0], pop->field->distance[chrom[pop->field->nodeNum-1]][chrom[0]]);
 	for(i = 0; i < pop->field->nodeNum-1; i++) {
+		// printf("distance[%d][%d] = %f\n", chrom[i], chrom[i+1], pop->field->distance[chrom[i]][chrom[i+1]]);
 		fitness += pop->field->distance[chrom[i]][chrom[i+1]];
 	}
+	// printf("fitness = %f\n", fitness);
 }
 
 // 突然変異を起こす
