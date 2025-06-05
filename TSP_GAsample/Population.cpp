@@ -116,7 +116,7 @@ int Population::rankingSelect()
 		rからnumを引く．
 */
 	// printf("rankingSelect:ここまでok1\n");
-	for(int i = 1; i < POP_SIZE+1; i ++) {
+	for(int i = 1; i <= POP_SIZE; i++) {
 		denom += i;
 		// printf("rankingSelect:denom=%d\n", denom);
 		
@@ -148,7 +148,7 @@ int Population::rouletteSelect()
 	for(rank = 1; rank < POP_SIZE; rank++) {
 		prob = trFit[rank-1]/denom;
 		if(r <= prob) break;
-		r - prob;
+		r -= prob;
 	}
 	return rank - 1;
 }
@@ -183,12 +183,15 @@ int Population::tournamentSelect()
 	while (true)
 	{
 		r = rand() % POP_SIZE;
-		if(ind[r]->fitness < bestFit) {
-			ret = r;
-			bestFit = ind[r]->fitness;
+		if(tmp[r] == 0) {
+			tmp[r] = 1;
+			if(ind[r]->fitness < bestFit) {
+				ret = r;
+				bestFit = ind[r]->fitness;
+			}
+			num++;
+			if(num == TOURNAMENT_SIZE) break;
 		}
-		num += 1;
-		if(num == TOURNAMENT_SIZE) break;
 	}
 	
 	return ret;
@@ -202,6 +205,26 @@ int Population::tournamentSelect()
 void Population::crossover(int p1, int p2, int c1, int c2)
 {
 	int point1, point2, tmp, i, j, key;
+	FILE* fp = fopen("debugLog.txt", "a");  // "a" にすると追記
+	if (fp == NULL) {
+		perror("fopen");
+		exit(1);
+	}
+
+
+	fprintf(fp, "----- DEBUG: ind[p1]->chrom -----\n");
+	for (int i = 0; i < field->nodeNum; i++) {
+		fprintf(fp, "%d ", ind[p1]->chrom[i]);
+	}
+	fprintf(fp, "\n");
+
+	fprintf(fp, "----- DEBUG: ind[p2]->chrom -----\n");
+	for (int i = 0; i < field->nodeNum; i++) {
+		fprintf(fp, "%d ", ind[p2]->chrom[i]);
+	}
+	fprintf(fp, "\n");
+	fclose(fp);
+
 
 	// used1, used2の初期化
 /*
@@ -209,8 +232,6 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 */
 	for(i = 0; i < field->nodeNum; i++) {
 		used1[i] = 0;
-	}
-	for(i = 0; i < field->nodeNum; i++) {
 		used2[i] = 0;
 	}
 	// printf("crossover:ここまでok\n");
@@ -266,61 +287,61 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		--- ここまで処理B ---
 	iをpoint2からfield->nodeNum-1まで1ずつ増やしながら処理Aと処理Bを繰り返す．
 */
-	for(i = 0; i < point1+1; i++) {
-		//処理A
-		// printf("処理A1\n");
+	for (i = 0; i < point1; i++) {
+		// === 処理A ===
 		key = ind[p1]->chrom[i];
-		while (true)
-		{
-			for(j = point1+1; j < point2; j++) {
-				if(key == ind[p2]->chrom[j]) break;
-			} 
-			printf("A1j=%d, point2=%d\n", j, point2);
-			if(j == point2) break;
+		while (true) {
+			if(used1[key] == 1) break;
+			used1[key] = 1;
+
+			for (j = point1 + 1; j < point2; j++) {
+				if (key == ind[p2]->chrom[j]) break;
+			}
+			if (j == point2) break;
 			key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
-		//処理B
-		// printf("処理B1\n");
+		// === 処理B ===
 		key = ind[p2]->chrom[i];
-		while (true)
-		{
-			for(j = point1+1; j < point2; j++) {
-				if(key == ind[p1]->chrom[j]) break;
-			} 
-			printf("B1j=%d, point2=%d\n", j, point2);
-			if(j == point2) break;
+		while (true) {
+			if(used2[key] == 1) break;
+			used2[key] = 1;
+
+			for (j = point1 + 1; j < point2; j++) {
+				if (key == ind[p1]->chrom[j]) break;
+			}
+			if (j == point2) break;
 			key = ind[p2]->chrom[j];
 		}
 		nextInd[c2]->chrom[i] = key;
 	}
 
-	for(i = point2; i < field->nodeNum; i++) {
-		//処理A
-		// printf("処理A2\n");
+	for (i = point2; i < field->nodeNum; i++) {
+		// === 処理A ===
 		key = ind[p1]->chrom[i];
-		while (true)
-		{
-			for(j = point1+1; j < point2; j++) {
-				if(key == ind[p2]->chrom[j]) break;
-			} 
-			printf("A2j=%d, point2=%d\n", j, point2);
-			if(j == point2) break;
+		while (true) {
+			if(used1[key] == 1) break;
+			used1[key] = 1;
+
+			for (j = point1 + 1; j < point2; j++) {
+				if (key == ind[p2]->chrom[j]) break;
+			}
+			if (j == point2) break;
 			key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
-		//処理B
-		// printf("処理B2\n");
+		// === 処理B ===
 		key = ind[p2]->chrom[i];
-		while (true)
-		{
-			for(j = point1+1; j < point2; j++) {
-				if(key == ind[p1]->chrom[j]) break;
-			} 
-			printf("B2j=%d, point2=%d\n", j, point2);
-			if(j == point2) break;
+		while (true) {
+			if(used2[key] == 1) break;
+			used2[key] = 1;
+
+			for (j = point1 + 1; j < point2; j++) {
+				if (key == ind[p1]->chrom[j]) break;
+			}
+			if (j == point2) break;
 			key = ind[p2]->chrom[j];
 		}
 		nextInd[c2]->chrom[i] = key;

@@ -8,6 +8,7 @@ Individual::Individual(Population *argPop)
 {
 	pop = argPop;
 	chrom = new int [pop->field->nodeNum];
+	// randArray = new int[pop->field->nodeNum];
 	setChrom();
 }
 
@@ -15,6 +16,7 @@ Individual::Individual(Population *argPop)
 Individual::~Individual()
 {
 	delete [] chrom;
+	// delete [] randArray;
 }
 
 // ランダムに染色体を決める
@@ -33,7 +35,7 @@ void Individual::setChrom()
 	chrom[0] = 0;
 	for(i = 1; i < pop->field->nodeNum; i++) {
 		chrom[i] = i;
-		randArray[i] = rand() % 2;
+		randArray[i] = rand();
 	}
 	sortRandArray(1, pop->field->nodeNum-1);
 	fitness = -0.1;
@@ -49,7 +51,7 @@ void Individual::evaluate()
 	iを0からpop->field->nodeNum-2まで1ずつ増やしながら以下を繰り返す．
 		fitnessにpop->field->distance[chrom[i]][chrom[i+1]]を足す．
 */
-	fitness = pop->field->distance[chrom[pop->field->nodeNum]][chrom[0]];
+	fitness = pop->field->distance[chrom[pop->field->nodeNum-1]][chrom[0]];
 	for(i = 0; i < pop->field->nodeNum-1; i++) {
 		fitness += pop->field->distance[chrom[i]][chrom[i+1]];
 	}
@@ -70,7 +72,7 @@ void Individual::mutate()
 		if(RAND_01 < MUTATE_PROB) {
 			while (true)
 			{
-				r = rand() % pop->field->nodeNum-1;
+				r = (rand() % pop->field->nodeNum-1)+1;
 				if(r!=i)break;
 			}
 			int buf = chrom[i];
@@ -93,10 +95,12 @@ void Individual::sortRandArray(int lb, int ub)
 		i = lb;
 		j = ub;
 		do {
-			while(randArray[i] < key)
+			while(randArray[i] < key) {
 				i++;
-			while(randArray[j] > key)
+			}
+			while(randArray[j] > key) {
 				j--;
+			}
 			if(i <= j) {
 				tmp = randArray[i];
 				randArray[i] = randArray[j];
