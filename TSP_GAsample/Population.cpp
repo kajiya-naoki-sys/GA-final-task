@@ -206,172 +206,237 @@ int Population::tournamentSelect()
 // 部分写像交叉でind[p1]とind[p2]からnextInd[c1]とnextInd[c2]を生成する．
 // p1: 親個体1の添字
 // p2: 親個体2の添字
-// c1: 子個体1の添字
-// c2: 子個体2の添字
+// // c1: 子個体1の添字
+// // c2: 子個体2の添字
+// void Population::crossover(int p1, int p2, int c1, int c2)
+// {
+// 	int point1, point2, tmp, i, j, key;
+
+// 	// used1, used2の初期化
+// /*
+// 	used1[0]～used1[field->nodeNum-1] ，used2[0]～used2[field->nodeNum-1]を0にする．
+// */
+// 	for(i = 0; i < field->nodeNum; i++) {
+// 		used1[i] = 0;
+// 		used2[i] = 0;
+// 	}
+// 	printf("crossover result: ");
+// 	for (i = 0; i < field->nodeNum; i++) {
+// 		printf("%d ", nextInd[c1]->chrom[i]);
+// 	}
+// 	printf("\n");
+
+// 	// printf("crossover:ここまでok\n");
+// 	// 交叉点の選択
+// /*
+// 	point1に0～field->nodeNum-2の乱数を代入する．
+// 	point2にpoint1とは異なる0～field->nodeNum-2の乱数を代入する．
+// 	point1がpoint2より大きかったら入れ替える．
+// */
+// 	point1 = rand() % (field->nodeNum-1);
+// 	while (true) 
+// 	{
+// 		point2 = rand() % (field->nodeNum-1);
+// 		if(point1 != point2) break;
+// 	}
+// 	if(point1 > point2) {
+// 		int buf = point1;
+// 		point1 = point2;
+// 		point2 = buf;
+// 	}
+// 	// printf("crossover:ここまでok1\n");
+
+// 	// 交叉点間のコピー
+// /*
+// 	iをpoint1+1からpoint2-1まで1ずつ増やしながら以下を繰り返す．
+// 		nextInd[c1]->chrom[i]にind[p2]->chrom[i]を代入する．
+// 		nextInd[c2]->chrom[i]にind[p1]->chrom[i]を代入する．
+// */
+// 	for(i = point1+1; i < point2; i++) {
+// 		// printf("CHECK: c1=%d, p2=%d, i=%d\n", c1, p2, i);
+// 		nextInd[c1]->chrom[i] = ind[p2]->chrom[i];
+
+// 		// printf("CHECK: c2=%d, p1=%d, i=%d\n", c2, p1, i);
+// 		nextInd[c2]->chrom[i] = ind[p1]->chrom[i];
+// 	}
+// 	// printf("crossover:ここまでok2\n");
+
+// 	// 交叉点外のコピー
+// /*
+// 	iを0からpoint1まで1ずつ増やしながら以下を繰り返す．	
+// 		--- ここから処理A ---
+// 		keyにind[p1]->chrom[i]を代入する．
+// 		以下を無限に繰り返す．
+// 			jをpoint1+1からpoint2-1まで1ずつ増やしながら以下を繰り返す．
+// 				keyがind[p2]->chrom[j]と等しかったら繰返しから抜ける．
+// 			jがpoint2と等しかったら繰返しから抜ける．
+// 			keyにind[p1]->chrom[j]を代入する．
+// 		nextInd[c1]->chrom[i]にkeyを代入する．
+// 		--- ここまで処理A ---
+
+// 		--- ここから処理B ---
+// 		処理Aのp1をp2，p2をp1，c1をc2にした処理を実行する．
+// 		--- ここまで処理B ---
+// 	iをpoint2からfield->nodeNum-1まで1ずつ増やしながら処理Aと処理Bを繰り返す．
+// */
+// 	for (i = 0; i < point1; i++) {
+// 		// === 処理A ===
+// 		key = ind[p1]->chrom[i];
+// 		while (true) {
+// 			if(used1[key] == 1) break;
+// 			used1[key] = 1;
+
+// 			for (j = point1 + 1; j < point2; j++) {
+// 				if (key == ind[p2]->chrom[j]) {
+// 					key = ind[p1]->chrom[j];
+// 					break;
+// 				}
+// 			}
+// 			if (j == point2) break;
+// 			// key = ind[p1]->chrom[j];
+// 		}
+// 		nextInd[c1]->chrom[i] = key;
+
+// 		// === 処理B ===
+// 		key = ind[p2]->chrom[i];
+// 		while (true) {
+// 			if(used2[key] == 1) break;
+// 			used2[key] = 1;
+
+// 			for (j = point1 + 1; j < point2; j++) {
+// 				if (key == ind[p1]->chrom[j]) {
+// 					key = ind[p2]->chrom[j];
+// 					break;
+// 				}
+// 			}
+// 			if (j == point2) break;
+// 			// key = ind[p2]->chrom[j];
+// 		}
+// 		nextInd[c2]->chrom[i] = key;
+// 	}
+
+// 	for (i = point2; i < field->nodeNum; i++) {
+// 		// === 処理A ===
+// 		key = ind[p1]->chrom[i];
+// 		while (true) {
+// 			if(used1[key] == 1) break;
+// 			used1[key] = 1;
+
+// 			for (j = point1 + 1; j < point2; j++) {
+// 				if (key == ind[p2]->chrom[j]) {
+// 					key = ind[p1]->chrom[j];
+// 					break;
+// 				}
+// 			}
+// 			if (j == point2) break;
+// 			// key = ind[p1]->chrom[j];
+// 		}
+// 		nextInd[c1]->chrom[i] = key;
+
+// 		// === 処理B ===
+// 		key = ind[p2]->chrom[i];
+// 		while (true) {
+// 			if(used2[key] == 1) break;
+// 			used2[key] = 1;
+
+// 			for (j = point1 + 1; j < point2; j++) {
+// 				if (key == ind[p1]->chrom[j]) {
+// 					key = ind[p2]->chrom[j];
+// 					break;
+// 				}
+// 			}
+// 			if (j == point2) break;
+// 			// key = ind[p2]->chrom[j];
+// 		}
+// 		nextInd[c2]->chrom[i] = key;
+// 	}
+
+// }
+
+// 部分写像交叉でind[p1]とind[p2]からnextInd[c1]とnextInd[c2]を生成する．
+// p1: 親個体1の添字
+// p2: 親個体2の添字
+// // c1: 子個体1の添字
+// // c2: 子個体2の添字
 void Population::crossover(int p1, int p2, int c1, int c2)
 {
-	int point1, point2, tmp, i, j, key;
-	// FILE* fp = fopen("debugLog.txt", "a");  // "a" にすると追記
-	// if (fp == NULL) {
-	// 	perror("fopen");
-	// 	exit(1);
-	// }
-
-
-	// fprintf(fp, "----- DEBUG: ind[p1]->chrom -----\n");
-	// for (int i = 0; i < field->nodeNum; i++) {
-	// 	fprintf(fp, "%d ", ind[p1]->chrom[i]);
-	// }
-	// fprintf(fp, "\n");
-
-	// fprintf(fp, "----- DEBUG: ind[p2]->chrom -----\n");
-	// for (int i = 0; i < field->nodeNum; i++) {
-	// 	fprintf(fp, "%d ", ind[p2]->chrom[i]);
-	// }
-	// fprintf(fp, "\n");
-	// fclose(fp);
-
+	int point1, point2, key, i, j;
 
 	// used1, used2の初期化
-/*
-	used1[0]～used1[field->nodeNum-1] ，used2[0]～used2[field->nodeNum-1]を0にする．
-*/
-	for(i = 0; i < field->nodeNum; i++) {
+	/*
+		used1[0]～used1[field->nodeNum-1] ，used2[0]～used2[field->nodeNum-1]を0にする．
+	*/
+	for (i = 0; i < field->nodeNum; i++) {
 		used1[i] = 0;
 		used2[i] = 0;
 	}
-	printf("crossover result: ");
-	for (i = 0; i < field->nodeNum; i++) {
-		printf("%d ", nextInd[c1]->chrom[i]);
-	}
-	printf("\n");
 
-	// printf("crossover:ここまでok\n");
-	// 交叉点の選択
-/*
-	point1に0～field->nodeNum-2の乱数を代入する．
-	point2にpoint1とは異なる0～field->nodeNum-2の乱数を代入する．
-	point1がpoint2より大きかったら入れ替える．
-*/
-	point1 = rand() % (field->nodeNum-1);
-	while (true) 
-	{
-		point2 = rand() % (field->nodeNum-1);
-		if(point1 != point2) break;
-	}
-	if(point1 > point2) {
-		int buf = point1;
-		point1 = point2;
-		point2 = buf;
-	}
-	// printf("crossover:ここまでok1\n");
+	/*
+		point1に0～field->nodeNum-2の乱数を代入する．
+		point2にpoint1とは異なる0～field->nodeNum-2の乱数を代入する．
+		point1がpoint2より大きかったら入れ替える．
+	*/
+	point1 = rand() % (field->nodeNum - 1);
+	do {
+		point2 = rand() % (field->nodeNum - 1);
+	} while (point1 == point2);
+	if (point1 > point2) std::swap(point1, point2);
 
+	// 子に交叉部分をコピー & 使用済みにマーク
 	// 交叉点間のコピー
-/*
-	iをpoint1+1からpoint2-1まで1ずつ増やしながら以下を繰り返す．
-		nextInd[c1]->chrom[i]にind[p2]->chrom[i]を代入する．
-		nextInd[c2]->chrom[i]にind[p1]->chrom[i]を代入する．
-*/
-	for(i = point1+1; i < point2; i++) {
-		// printf("CHECK: c1=%d, p2=%d, i=%d\n", c1, p2, i);
+	/*
+		iをpoint1+1からpoint2-1まで1ずつ増やしながら以下を繰り返す．
+			nextInd[c1]->chrom[i]にind[p2]->chrom[i]を代入する．
+			nextInd[c2]->chrom[i]にind[p1]->chrom[i]を代入する．
+	*/
+	for (i = point1; i <= point2; i++) {
 		nextInd[c1]->chrom[i] = ind[p2]->chrom[i];
-
-		// printf("CHECK: c2=%d, p1=%d, i=%d\n", c2, p1, i);
 		nextInd[c2]->chrom[i] = ind[p1]->chrom[i];
+		used1[nextInd[c1]->chrom[i]] = 1;
+		used2[nextInd[c2]->chrom[i]] = 1;
 	}
-	// printf("crossover:ここまでok2\n");
 
 	// 交叉点外のコピー
-/*
-	iを0からpoint1まで1ずつ増やしながら以下を繰り返す．	
-		--- ここから処理A ---
-		keyにind[p1]->chrom[i]を代入する．
-		以下を無限に繰り返す．
-			jをpoint1+1からpoint2-1まで1ずつ増やしながら以下を繰り返す．
-				keyがind[p2]->chrom[j]と等しかったら繰返しから抜ける．
-			jがpoint2と等しかったら繰返しから抜ける．
-			keyにind[p1]->chrom[j]を代入する．
-		nextInd[c1]->chrom[i]にkeyを代入する．
-		--- ここまで処理A ---
+	// 子c1の残りを埋める
+	for (i = 0; i < field->nodeNum; i++) {
+		if (i >= point1 && i <= point2) continue;
 
-		--- ここから処理B ---
-		処理Aのp1をp2，p2をp1，c1をc2にした処理を実行する．
-		--- ここまで処理B ---
-	iをpoint2からfield->nodeNum-1まで1ずつ増やしながら処理Aと処理Bを繰り返す．
-*/
-	for (i = 0; i < point1; i++) {
-		// === 処理A ===
 		key = ind[p1]->chrom[i];
-		while (true) {
-			if(used1[key] == 1) break;
-			used1[key] = 1;
-
-			for (j = point1 + 1; j < point2; j++) {
+		while (used1[key]) {
+			// PMX写像をたどる
+			for (j = point1; j <= point2; j++) {
 				if (key == ind[p2]->chrom[j]) {
 					key = ind[p1]->chrom[j];
 					break;
 				}
 			}
-			if (j == point2) break;
-			// key = ind[p1]->chrom[j];
+			if (j == point2 + 1) break; // 対応がなかったら終了
 		}
 		nextInd[c1]->chrom[i] = key;
+		used1[key] = 1;
+	}
 
-		// === 処理B ===
-		key = ind[p2]->chrom[i];
-		while (true) {
-			if(used2[key] == 1) break;
-			used2[key] = 1;
+	// 子c2の残りを埋める
+	for (i = 0; i < field->nodeNum; i++) {
+		if (i >= point1 && i <= point2) continue;
 
-			for (j = point1 + 1; j < point2; j++) {
+		int key = ind[p2]->chrom[i];
+		while (used2[key]) {
+			// PMX写像をたどる
+			for (j = point1; j <= point2; j++) {
 				if (key == ind[p1]->chrom[j]) {
 					key = ind[p2]->chrom[j];
 					break;
 				}
 			}
-			if (j == point2) break;
-			// key = ind[p2]->chrom[j];
+			if (j == point2 + 1) break;
 		}
 		nextInd[c2]->chrom[i] = key;
+		used2[key] = 1;
 	}
-
-	for (i = point2; i < field->nodeNum; i++) {
-		// === 処理A ===
-		key = ind[p1]->chrom[i];
-		while (true) {
-			if(used1[key] == 1) break;
-			used1[key] = 1;
-
-			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p2]->chrom[j]) {
-					key = ind[p1]->chrom[j];
-					break;
-				}
-			}
-			if (j == point2) break;
-			// key = ind[p1]->chrom[j];
-		}
-		nextInd[c1]->chrom[i] = key;
-
-		// === 処理B ===
-		key = ind[p2]->chrom[i];
-		while (true) {
-			if(used2[key] == 1) break;
-			used2[key] = 1;
-
-			for (j = point1 + 1; j < point2; j++) {
-				if (key == ind[p1]->chrom[j]) {
-					key = ind[p2]->chrom[j];
-					break;
-				}
-			}
-			if (j == point2) break;
-			// key = ind[p2]->chrom[j];
-		}
-		nextInd[c2]->chrom[i] = key;
-	}
-
 }
+
+
 
 // ind[lb]～ind[ub]をクイックソートで並び替える
 // lb: 並び替えの対象要素の添え字の下限
