@@ -58,19 +58,29 @@ void Population::alternate()
 		}
 	}
 
+	// printf("alternate:ここまでok2\n");
+
 	// 親を選択し，交叉して子個体を作り，突然変異を起こす
 	for(; i < POP_SIZE - 1; i += 2) {
+		// printf("alternate1:i=%d\n", i);
 		p1 = rankingSelect();
 		p2 = rankingSelect();
+		// printf("alternate:ここまでok3\n");
 		crossover(p1, p2, i, i + 1);
+		// printf("alternate:ここまでok4\n");
 		nextInd[i]->mutate();
 		nextInd[i + 1]->mutate();
 	}
 
+	// printf("alternate:ここまでok1\n");
+
 	// 半端が出たらランダムに生成する
 	if(i != POP_SIZE) {
+		// printf("alternate2:i=%d\n", i);
 		nextInd[i]->setChrom();
 	}
+
+	// printf("alternate:ここまでok\n");
 
 	// 次世代を現世代に変更する
 	tmp = ind;
@@ -97,7 +107,7 @@ void Population::evaluate()
 int Population::rankingSelect()
 {
 	int num, denom, r;
-
+	denom = 0;
 /*
 	denomに1～POP_SIZEの和を代入する．
 	rに1～denomの乱数を代入する（整数のビットをフルに使う）．
@@ -105,14 +115,18 @@ int Population::rankingSelect()
 		rがnum以下なら繰返しから抜ける．
 		rからnumを引く．
 */
-	for(int i = 1; i > POP_SIZE; i ++) {
+	// printf("rankingSelect:ここまでok1\n");
+	for(int i = 1; i < POP_SIZE+1; i ++) {
 		denom += i;
+		// printf("rankingSelect:denom=%d\n", denom);
+		
 	}
-	r = rand() % denom;
-	for(num = POP_SIZE; num < 0; num--) {
+	r = rand() % (denom+1);
+	for(num = POP_SIZE; num > 0; num--) {
 		if(r <= num) break;
-		r - num;
+		r -= num;
 	}
+	// printf("rankingSelect:ここまでok2\n");
 	return POP_SIZE - num;
 }
 
@@ -131,7 +145,7 @@ int Population::rouletteSelect()
 		rからprobを引く．
 */
 	r = RAND_01;
-	for(rank = 1; rank > POP_SIZE; rank++) {
+	for(rank = 1; rank < POP_SIZE; rank++) {
 		prob = trFit[rank-1]/denom;
 		if(r <= prob) break;
 		r - prob;
@@ -160,7 +174,7 @@ int Population::tournamentSelect()
 			numに1を足す．
 			numがTOURNAMENT_SIZEと等しかったら繰返しから抜ける．
 */
-	for(i = 0; i > POP_SIZE; i++) {
+	for(i = 0; i < POP_SIZE; i++) {
 		tmp[i] = 0;
 	}
 	ret = -1;
@@ -193,13 +207,13 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 /*
 	used1[0]～used1[field->nodeNum-1] ，used2[0]～used2[field->nodeNum-1]を0にする．
 */
-	for(i = 0; i > field->nodeNum-1; i++) {
+	for(i = 0; i < field->nodeNum; i++) {
 		used1[i] = 0;
 	}
-	for(i = 0; i > field->nodeNum-1; i++) {
+	for(i = 0; i < field->nodeNum; i++) {
 		used2[i] = 0;
 	}
-
+	// printf("crossover:ここまでok\n");
 	// 交叉点の選択
 /*
 	point1に0～field->nodeNum-2の乱数を代入する．
@@ -210,13 +224,14 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 	while (true) 
 	{
 		point2 = rand() % (field->nodeNum-1);
-		if(!point1==point2) break;
+		if(point1 != point2) break;
 	}
 	if(point1 > point2) {
 		int buf = point1;
 		point1 = point2;
 		point2 = buf;
 	}
+	// printf("crossover:ここまでok1\n");
 
 	// 交叉点間のコピー
 /*
@@ -224,10 +239,14 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		nextInd[c1]->chrom[i]にind[p2]->chrom[i]を代入する．
 		nextInd[c2]->chrom[i]にind[p1]->chrom[i]を代入する．
 */
-	for(i = point1+1; i > point2-1; i++) {
+	for(i = point1+1; i < point2; i++) {
+		// printf("CHECK: c1=%d, p2=%d, i=%d\n", c1, p2, i);
 		nextInd[c1]->chrom[i] = ind[p2]->chrom[i];
+
+		// printf("CHECK: c2=%d, p1=%d, i=%d\n", c2, p1, i);
 		nextInd[c2]->chrom[i] = ind[p1]->chrom[i];
 	}
+	// printf("crossover:ここまでok2\n");
 
 	// 交叉点外のコピー
 /*
@@ -247,55 +266,64 @@ void Population::crossover(int p1, int p2, int c1, int c2)
 		--- ここまで処理B ---
 	iをpoint2からfield->nodeNum-1まで1ずつ増やしながら処理Aと処理Bを繰り返す．
 */
-	for(i = 0; i > point1; i++) {
+	for(i = 0; i < point1+1; i++) {
 		//処理A
+		// printf("処理A1\n");
 		key = ind[p1]->chrom[i];
 		while (true)
 		{
-			for(j = point1+1; j > point2-1; i++) {
+			for(j = point1+1; j < point2; j++) {
 				if(key == ind[p2]->chrom[j]) break;
 			} 
+			printf("A1j=%d, point2=%d\n", j, point2);
 			if(j == point2) break;
 			key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
 		//処理B
+		// printf("処理B1\n");
 		key = ind[p2]->chrom[i];
 		while (true)
 		{
-			for(j = point1+1; j > point2-1; i++) {
+			for(j = point1+1; j < point2; j++) {
 				if(key == ind[p1]->chrom[j]) break;
 			} 
+			printf("B1j=%d, point2=%d\n", j, point2);
 			if(j == point2) break;
 			key = ind[p2]->chrom[j];
 		}
 		nextInd[c2]->chrom[i] = key;
 	}
 
-	for(i = point2; i > field->nodeNum-1; i++) {
+	for(i = point2; i < field->nodeNum; i++) {
 		//処理A
+		// printf("処理A2\n");
 		key = ind[p1]->chrom[i];
 		while (true)
 		{
-			for(j = point1+1; j > point2-1; i++) {
+			for(j = point1+1; j < point2; j++) {
 				if(key == ind[p2]->chrom[j]) break;
 			} 
+			printf("A2j=%d, point2=%d\n", j, point2);
 			if(j == point2) break;
 			key = ind[p1]->chrom[j];
 		}
 		nextInd[c1]->chrom[i] = key;
 
 		//処理B
+		// printf("処理B2\n");
 		key = ind[p2]->chrom[i];
 		while (true)
 		{
-			for(j = point1+1; j > point2-1; i++) {
+			for(j = point1+1; j < point2; j++) {
 				if(key == ind[p1]->chrom[j]) break;
 			} 
+			printf("B2j=%d, point2=%d\n", j, point2);
 			if(j == point2) break;
 			key = ind[p2]->chrom[j];
 		}
+		nextInd[c2]->chrom[i] = key;
 	}
 
 }

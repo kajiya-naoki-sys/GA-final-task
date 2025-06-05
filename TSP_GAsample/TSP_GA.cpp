@@ -15,11 +15,12 @@ int main()
 		printf("%d : %s\n", i + 1, dataName[i]);
 	}
 	scanf("%d", &dataNo);
-	sprintf(fname, "%s.tsp", dataName[dataNo - 1]);
+	sprintf(fname, "./TSPdata/%s.tsp", dataName[dataNo - 1]);
 	field = new Field(fname);
 
 	pop = new Population(field);
 	for(i = 1; i <= GEN_MAX; i++) {
+		// printf("i=%d\n", i);
 		pop->alternate();
 	}
 	pop->printRoute();
