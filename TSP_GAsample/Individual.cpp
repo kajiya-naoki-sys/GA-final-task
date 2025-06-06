@@ -39,11 +39,11 @@ void Individual::setChrom()
 	}
 	sortRandArray(1, pop->field->nodeNum-1);
 
-	printf("setChrom()結果: ");
-	for (int i = 0; i < pop->field->nodeNum; i++) {
-		printf("%d ", chrom[i]);
-	}
-	printf("\n");
+	// printf("setChrom()結果: ");
+	// for (int i = 0; i < pop->field->nodeNum; i++) {
+	// 	printf("%d ", chrom[i]);
+	// }
+	// printf("\n");
 
 	fitness = -0.1;
 }
