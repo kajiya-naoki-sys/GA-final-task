@@ -1,7 +1,13 @@
 ﻿#include "Population.h"
+#include <stdio.h>
+#include <time.h>
 
 int main()
 {
+	clock_t start, end;
+	double cpu_time_used;
+	start = clock();
+
 	int i, dataNo;
 	char fname[256];
 	Population* pop;
@@ -27,5 +33,15 @@ int main()
 
 	delete pop;
 	delete field;
+	
+	end = clock();
+	cpu_time_used = ((double)(end - start)) / CLOCKS_PER_SEC;
+	//結果をファイルに書き込む
+	FILE* fp = fopen("clockTime.txt", "a");  // "a" にすると追記
+	if (fp == NULL) {
+		perror("fopen");
+		exit(1);
+	}
+	fprintf(fp, "%f\n", cpu_time_used);
 	return 0;
 }

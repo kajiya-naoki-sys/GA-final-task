@@ -14,7 +14,7 @@
 #define POP_SIZE	100		// 個体群のサイズ
 #define ELITE		1		// エリート保存戦略で残す個体の数
 #define MUTATE_PROB	0.01	// 突然変異確率
-#define TOURNAMENT_SIZE 30	// トーナメントサイズ
+#define TOURNAMENT_SIZE 40	// トーナメントサイズ
 #define LINE_LEN	1024	// ファイル読込み時の配列変数の長さ
 #define DATA_NUM	5		// データ数
 

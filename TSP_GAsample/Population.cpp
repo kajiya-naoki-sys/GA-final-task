@@ -482,4 +482,13 @@ void Population::printRoute()
 	}
 	printf("\n");
 	printf("Total Distance : %f\n", ind[0]->fitness);
+
+	//結果をファイルに書き込む
+	FILE* fp = fopen("fitness.txt", "a");  // "a" にすると追記
+	if (fp == NULL) {
+		perror("fopen");
+		exit(1);
+	}
+	fprintf(fp, "%f\n", ind[0]->fitness);
+
 }
